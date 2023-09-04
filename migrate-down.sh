@@ -1,0 +1,1 @@
+migrate -database "postgres://rizaalifwildani:jangankepo@localhost:5432/katalia?sslmode=disable" -path migrations down
