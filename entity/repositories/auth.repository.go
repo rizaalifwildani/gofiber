@@ -74,6 +74,10 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 	}
 	auth.Token = signedToken
 	auth.ExpiredAt = &exp
+	authErr := r.Update(&auth, auth.ID.String())
+	if authErr != nil {
+		return nil, authErr
+	}
 
 	return &auth, nil
 }
