@@ -6,3 +6,5 @@ CREATE TABLE roles (
     created_at TIMESTAMP DEFAULT current_timestamp,
     updated_at TIMESTAMP
 );
+CREATE UNIQUE INDEX idx_roles_name ON roles(name);
+CREATE INDEX idx_roles_display_name ON roles(display_name);

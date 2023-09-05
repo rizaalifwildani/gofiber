@@ -9,3 +9,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT current_timestamp,
     updated_at TIMESTAMP
 );
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_phone ON users(phone);
+CREATE INDEX idx_users_searchs ON users(email, first_name, last_name);
