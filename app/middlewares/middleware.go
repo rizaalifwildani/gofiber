@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -26,8 +25,6 @@ func InitMiddleware(c *fiber.Ctx) error {
 		return responses.ErrorUnauthorized(c)
 	}
 	claims, ok := token.Claims.(*configs.JWTConfig)
-
-	log.Println(claims.ExpiresAt)
 
 	exp := time.Unix(claims.ExpiresAt, 0)
 	currentTime := time.Now()

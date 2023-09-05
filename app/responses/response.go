@@ -34,6 +34,15 @@ func ErrorResponse(c *fiber.Ctx, statusCode int, message string) error {
 	return NewResponse(c, &res)
 }
 
+func ErrorInternal(c *fiber.Ctx) error {
+	res := Response{
+		Status:  fiber.StatusInternalServerError,
+		Message: http.StatusText(fiber.StatusInternalServerError),
+		Data:    nil,
+	}
+	return NewResponse(c, &res)
+}
+
 func ErrorValidationResponse(c *fiber.Ctx, data interface{}) error {
 	res := Response{
 		Status:  fiber.StatusUnprocessableEntity,

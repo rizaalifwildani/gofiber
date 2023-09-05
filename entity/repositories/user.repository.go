@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"log"
 
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"bitbucket.org/rizaalifofficial/gofiber/utils"
@@ -23,7 +22,6 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 func (r *UserRepository) CreateUser(model *models.User, authModel *models.UserAuth) error {
-	log.Println(model)
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(&model).Error
 		if err != nil {

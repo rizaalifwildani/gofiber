@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(configs.InitFiberConfig())
+
+	/* CORS */
+	app.Use(configs.InitCors())
 
 	/* INITIALIZED */
 	configs.InitEnvirontment()
