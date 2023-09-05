@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 	"strings"
 
 	"bitbucket.org/rizaalifofficial/gofiber/app/requests"
@@ -41,7 +40,7 @@ func (c *PermissionController) CreatePermission(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "permission already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "permission created successfully")
@@ -87,7 +86,7 @@ func (c *PermissionController) UpdatePermission(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "permission already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "permission updated successfully")

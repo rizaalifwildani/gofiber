@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 	"strings"
 
 	"bitbucket.org/rizaalifofficial/gofiber/app/requests"
@@ -48,7 +47,7 @@ func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "user already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "user created successfully")
@@ -108,7 +107,7 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "user already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "user updated successfully")

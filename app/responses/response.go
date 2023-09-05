@@ -1,6 +1,7 @@
 package responses
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,6 +26,32 @@ func SuccessResponse(c *fiber.Ctx, data interface{}) error {
 	return NewResponse(c, &res)
 }
 
+func Resource(ctx *fiber.Ctx, model interface{}, res interface{}) error {
+	data := &res
+	jsonMarshal, err := json.Marshal(model)
+	if err != nil {
+		return err
+	}
+	errUnmarshal := json.Unmarshal(jsonMarshal, data)
+	if errUnmarshal != nil {
+		return errUnmarshal
+	}
+	return SuccessResponse(ctx, res)
+}
+
+func Collections(ctx *fiber.Ctx, model []interface{}, res *[]interface{}) error {
+	jsonMarshal, err := json.Marshal(&model)
+	if err != nil {
+		return err
+	}
+	errUnmarshal := json.Unmarshal(jsonMarshal, res)
+	if errUnmarshal != nil {
+		return errUnmarshal
+	}
+
+	return SuccessResponse(ctx, res)
+}
+
 func ErrorResponse(c *fiber.Ctx, statusCode int, message string) error {
 	res := Response{
 		Status:  statusCode,
@@ -38,6 +65,15 @@ func ErrorInternal(c *fiber.Ctx) error {
 	res := Response{
 		Status:  fiber.StatusInternalServerError,
 		Message: http.StatusText(fiber.StatusInternalServerError),
+		Data:    nil,
+	}
+	return NewResponse(c, &res)
+}
+
+func ErrorBadRequest(c *fiber.Ctx) error {
+	res := Response{
+		Status:  fiber.StatusBadRequest,
+		Message: http.StatusText(fiber.StatusBadRequest),
 		Data:    nil,
 	}
 	return NewResponse(c, &res)

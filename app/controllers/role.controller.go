@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 	"strings"
 
 	"bitbucket.org/rizaalifofficial/gofiber/app/requests"
@@ -42,7 +41,7 @@ func (c *RoleController) CreateRole(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "role already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "role created successfully")
@@ -91,7 +90,7 @@ func (c *RoleController) UpdateRole(ctx *fiber.Ctx) error {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			return responses.ErrorValidationResponse(ctx, "role already exists")
 		}
-		return responses.ErrorResponse(ctx, fiber.StatusBadRequest, http.StatusText(fiber.StatusBadRequest))
+		return responses.ErrorBadRequest(ctx)
 	}
 
 	return responses.SuccessResponse(ctx, "role updated successfully")
