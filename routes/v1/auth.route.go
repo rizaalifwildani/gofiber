@@ -1,4 +1,4 @@
-package routes
+package v1
 
 import (
 	"bitbucket.org/rizaalifofficial/gofiber/app/controllers"
@@ -11,5 +11,5 @@ func AuthRoute(router fiber.Router, db *gorm.DB) {
 	repository := repositories.NewAuthRepository(db)
 	controller := controllers.NewAuthController(repository)
 	route := router.Group("/auth")
-	route.Post("/login", controller.Login)
+	route.Post("/logout", controller.Logout)
 }

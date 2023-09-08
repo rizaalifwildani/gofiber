@@ -1,40 +1,30 @@
 package middlewares
 
 import (
-	"os"
 	"strings"
 	"time"
 
 	"bitbucket.org/rizaalifofficial/gofiber/app/responses"
-	"bitbucket.org/rizaalifofficial/gofiber/configs"
+	"bitbucket.org/rizaalifofficial/gofiber/static"
+	"bitbucket.org/rizaalifofficial/gofiber/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
 )
 
 func InitMiddleware(c *fiber.Ctx) error {
-	tokenString := c.Get("Authorization")
-	if tokenString == "" {
-		return responses.ErrorUnauthorized(c)
-	}
+	token, jwt, claims, ok := utils.ClaimsJWT(c)
 
-	// Parse the JWT token
-	token, err := jwt.ParseWithClaims(strings.ReplaceAll(tokenString, "Bearer ", ""), &configs.JWTConfig{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-	if err != nil {
-		return responses.ErrorUnauthorized(c)
-	}
-	claims, ok := token.Claims.(*configs.JWTConfig)
+	// Check Redis
+	val, err := utils.GetRedis(static.REDIS_TOKEN)
 
+	// Check Expired
 	exp := time.Unix(claims.ExpiresAt, 0)
 	currentTime := time.Now()
 
-	// Compare the expiration time to the current time
-	if exp.Before(currentTime) {
-		return responses.ErrorResponse(c, fiber.StatusUnauthorized, "token has expired")
+	if err != nil || token != string(*val) || exp.Before(currentTime) {
+		return responses.ErrorResponse(c, fiber.StatusUnauthorized, "invalid token")
 	}
 
-	if ok && token.Valid {
+	if ok && jwt.Valid {
 		// Check the requested path
 		requestedPath := c.Path()
 		if strings.Contains(requestedPath, "users") {

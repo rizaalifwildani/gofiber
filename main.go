@@ -12,15 +12,22 @@ import (
 func main() {
 	app := fiber.New(configs.InitFiberConfig())
 
+	/* ENVIRONTMENT */
+	configs.InitEnvirontment()
+
+	/* REDIS */
+	configs.InitRedis()
+
 	/* CORS */
 	app.Use(configs.InitCors())
 
-	/* INITIALIZED */
-	configs.InitEnvirontment()
+	/* DATABASE */
 	db, err := configs.InitDB()
 	if err != nil {
-		log.Fatal("Failed to connect DB.\n", err)
+		log.Fatal("failed to connect db.\n", err)
 	}
+
+	/* ROUTER */
 	routes.InitRouter(app, db)
 
 	app.Listen(":" + os.Getenv("PORT"))

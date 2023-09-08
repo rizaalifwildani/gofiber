@@ -10,16 +10,16 @@ import (
 
 func InitRouter(app *fiber.App, db *gorm.DB) {
 	api := app.Group("/api")
-	AuthRoute(api, db)
+	v1Route := api.Group("/v1")
 
-	/* === JWT === */
+	/* === OPEN ROUTE === */
+	v1.GuestRoute(v1Route, db)
+
+	/* === AUTHENTICATED ROUTE === */
 	app.Use(configs.InitJWT())
-
 	/* === MIDDLEWARE === */
 	app.Use(middlewares.InitMiddleware)
-
-	/* V1 */
-	v1Route := api.Group("/v1")
+	v1.AuthRoute(v1Route, db)
 	v1.UserRoute(v1Route, db)
 	v1.RoleRoute(v1Route, db)
 	v1.PermissionRoute(v1Route, db)
