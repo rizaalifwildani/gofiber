@@ -19,8 +19,11 @@ func InitRouter(app *fiber.App, db *gorm.DB) {
 	app.Use(configs.InitJWT())
 	/* === MIDDLEWARE === */
 	app.Use(middlewares.InitMiddleware)
+
+	/* === V1 === */
 	v1.AuthRoute(v1Route, db)
 	v1.UserRoute(v1Route, db)
 	v1.RoleRoute(v1Route, db)
 	v1.PermissionRoute(v1Route, db)
+	v1.BranchRoute(v1Route, db)
 }
