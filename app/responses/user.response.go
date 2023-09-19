@@ -7,31 +7,44 @@ import (
 )
 
 type UserResponse struct {
-	ID        uuid.UUID      `json:"id"`
-	Username  string         `json:"username"`
-	Phone     string         `json:"phone"`
-	Email     string         `json:"email"`
-	FirstName string         `json:"firstName"`
-	LastName  string         `json:"lastName"`
-	Roles     []RoleResponse `json:"roles,omitempty"`
+	ID        uuid.UUID        `json:"id"`
+	Username  string           `json:"username"`
+	Phone     string           `json:"phone"`
+	Email     string           `json:"email"`
+	FirstName string           `json:"firstName"`
+	LastName  string           `json:"lastName"`
+	RegNumber string           `json:"regNumber"`
+	Roles     []RoleResponse   `json:"roles,omitempty"`
+	Branches  []BranchResponse `json:"branches,omitempty"`
 }
 
 func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 	roles := []RoleResponse{}
 	for _, role := range m.Roles {
 		permissions := []PermissionResponse{}
-		for _, permission := range role.Role.Permissions {
+		for _, permission := range role.Permissions {
 			permissions = append(permissions, PermissionResponse{
-				ID:          permission.PermissionID,
-				Name:        permission.Permission.Name,
-				DisplayName: permission.Permission.DisplayName,
+				ID:          permission.ID,
+				Name:        permission.Name,
+				DisplayName: permission.DisplayName,
 			})
 		}
 		roles = append(roles, RoleResponse{
-			ID:          role.RoleID,
-			Name:        role.Role.Name,
-			DisplayName: role.Role.DisplayName,
+			ID:          role.ID,
+			Name:        role.Name,
+			DisplayName: role.DisplayName,
 			Permissions: permissions,
+		})
+	}
+	branches := []BranchResponse{}
+	for _, branch := range m.Branches {
+		branches = append(branches, BranchResponse{
+			ID:          branch.ID,
+			Name:        branch.Branch.Name,
+			Code:        branch.Branch.Code,
+			Address:     branch.Branch.Address,
+			Description: branch.Branch.Description,
+			Status:      branch.Status,
 		})
 	}
 	data := UserResponse{
@@ -41,7 +54,9 @@ func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 		Email:     m.Email,
 		FirstName: m.FirstName,
 		LastName:  m.LastName,
+		RegNumber: m.RegNumber,
 		Roles:     roles,
+		Branches:  branches,
 	}
 	return SuccessResponse(ctx, data)
 }
@@ -57,6 +72,7 @@ func NewUserCollections(ctx *fiber.Ctx, m []models.User) error {
 			Email:     v.Email,
 			FirstName: v.FirstName,
 			LastName:  v.LastName,
+			RegNumber: v.RegNumber,
 		})
 	}
 

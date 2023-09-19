@@ -13,8 +13,10 @@ type User struct {
 	Email     string    `gorm:"size:50"`
 	FirstName string    `gorm:"size:20"`
 	LastName  string    `gorm:"size:30"`
+	RegNumber string    `gorm:"unique;size:50;default:null"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 
-	Roles []UserRole `gorm:"foreignKey:UserID"`
+	Roles    []Role       `gorm:"many2many:user_roles"`
+	Branches []UserBranch `gorm:"foreignKey:UserID"`
 }

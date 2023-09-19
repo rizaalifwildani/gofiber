@@ -9,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/joho/godotenv v1.5.1
+	github.com/redis/go-redis/v9 v9.1.0
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
 )
@@ -32,7 +33,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/redis/go-redis/v9 v9.1.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

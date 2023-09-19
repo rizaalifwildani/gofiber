@@ -37,7 +37,9 @@ func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
 		Phone:     req.Phone,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
+		RegNumber: req.RegNumber,
 		Roles:     req.Roles,
+		Branches:  req.Branches,
 	}
 	authModel := models.UserAuth{
 		Password: req.Password,
@@ -60,6 +62,7 @@ func (c *UserController) AllUser(ctx *fiber.Ctx) error {
 		{Key: "phone", Value: ctx.Query("phone")},
 		{Key: "first_name", Value: ctx.Query("firstName")},
 		{Key: "last_name", Value: ctx.Query("lastName")},
+		{Key: "reg_number", Value: ctx.Query("regNumber")},
 	}
 	models, _ := c.repository.FindAllUser(filters)
 	return responses.NewUserCollections(ctx, models)
@@ -90,10 +93,12 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 	parsedUUID := utils.GenerateUUID(id)
 	model := models.User{
 		ID:        parsedUUID,
+		Username:  req.Username,
 		Email:     req.Email,
 		Phone:     req.Phone,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
+		RegNumber: req.RegNumber,
 		Roles:     req.Roles,
 	}
 	authModel := models.UserAuth{

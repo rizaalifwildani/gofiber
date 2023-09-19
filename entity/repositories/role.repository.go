@@ -10,7 +10,7 @@ type RoleRepository struct {
 }
 
 func NewRoleRepository(db *gorm.DB) *RoleRepository {
-	return &RoleRepository{BaseRepository{db: db, Preload: []string{"Permissions.Permission"}}}
+	return &RoleRepository{BaseRepository{db: db, Preload: []string{"Permissions"}}}
 }
 
 func (r *RoleRepository) FindAllRole(filters []FilterType) ([]models.Role, error) {
@@ -30,7 +30,7 @@ func (r *RoleRepository) UpdateRole(model *models.Role) error {
 	for _, permission := range model.Permissions {
 		permissions = append(permissions, &models.RolePermission{
 			RoleID:       model.ID,
-			PermissionID: permission.PermissionID,
+			PermissionID: permission.ID,
 		})
 	}
 

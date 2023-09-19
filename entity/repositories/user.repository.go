@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"bitbucket.org/rizaalifofficial/gofiber/utils"
@@ -16,7 +17,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{
 		BaseRepository{
 			db:      db,
-			Preload: []string{"Roles.Role.Permissions.Permission"},
+			Preload: []string{"Roles.Permissions", "Branches.Branch"},
 		},
 	}
 }
@@ -48,9 +49,21 @@ func (r *UserRepository) CreateUser(model *models.User, authModel *models.UserAu
 }
 
 func (r *UserRepository) FindAllUser(filters []FilterType) ([]models.User, error) {
-	data := []models.User{}
-	err := r.Find(&data, filters, "first_name")
-	return data, err
+	model := []models.User{}
+	query := r.db.Model(&model)
+	query.
+		Preload("Roles").
+		Joins("JOIN user_roles ON users.id = user_roles.user_id").
+		Joins("JOIN roles ON user_roles.role_id = roles.id").
+		Where("roles.name != ?", "root")
+	for _, v := range filters {
+		if v.Value != "" {
+			query.Where("LOWER("+v.Key+")"+" ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+		}
+	}
+	query.Order(fmt.Sprintf("%v DESC", "first_name"))
+	err := query.Find(&model)
+	return model, err.Error
 }
 
 func (r *UserRepository) FindUser(id string) (models.User, error) {
@@ -64,15 +77,31 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 	for _, role := range model.Roles {
 		roles = append(roles, &models.UserRole{
 			UserID: model.ID,
-			RoleID: role.RoleID,
+			RoleID: role.ID,
+		})
+	}
+
+	branches := []*models.UserBranch{}
+	for _, branch := range model.Branches {
+		branches = append(branches, &models.UserBranch{
+			UserID:   model.ID,
+			BranchID: branch.ID,
 		})
 	}
 
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		err := r.UpdateAssociation(*model, "Roles", roles)
+		// === USER ROLE === //
+		roleErr := r.UpdateAssociation(*model, "Roles", roles)
+		if roleErr != nil {
+			return roleErr
+		}
 
-		if err != nil {
-			return err
+		// === USER BRANCH === //
+		if len(branches) > 0 {
+			branchErr := r.UpdateAssociation(*model, "Branches", branches)
+			if branchErr != nil {
+				return branchErr
+			}
 		}
 
 		// === USER AUTH === //

@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"bitbucket.org/rizaalifofficial/gofiber/app/middlewares"
-	"bitbucket.org/rizaalifofficial/gofiber/configs"
 	v1 "bitbucket.org/rizaalifofficial/gofiber/routes/v1"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -11,14 +9,6 @@ import (
 func InitRouter(app *fiber.App, db *gorm.DB) {
 	api := app.Group("/api")
 	v1Route := api.Group("/v1")
-
-	/* === OPEN ROUTE === */
-	v1.GuestRoute(v1Route, db)
-
-	/* === AUTHENTICATED ROUTE === */
-	app.Use(configs.InitJWT())
-	/* === MIDDLEWARE === */
-	app.Use(middlewares.InitMiddleware)
 
 	/* === V1 === */
 	v1.AuthRoute(v1Route, db)
