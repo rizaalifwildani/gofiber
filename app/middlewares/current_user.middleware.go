@@ -30,7 +30,7 @@ func CurrentUser() func(*fiber.Ctx) error {
 						return c.Next()
 					}
 				}
-				if c.Params("id") == claims.Id {
+				if c.Params("id") == claims.ID.String() {
 					return c.Next()
 				}
 				return responses.ErrorForbidden(c)

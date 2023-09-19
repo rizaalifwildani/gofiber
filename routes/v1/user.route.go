@@ -15,5 +15,5 @@ func UserRoute(router fiber.Router, db *gorm.DB) {
 	route.Post("/", controller.CreateUser)
 	route.Get("/", controller.AllUser)
 	route.Get("/:id", controller.ShowUser)
-	route.Patch("/:id", controller.UpdateUser, middlewares.CurrentUser())
+	route.Patch("/:id", controller.UpdateUser)
 }
