@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"bitbucket.org/rizaalifofficial/gofiber/app/responses"
 	"bitbucket.org/rizaalifofficial/gofiber/configs"
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"bitbucket.org/rizaalifofficial/gofiber/static"
@@ -28,7 +27,7 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 	auth := models.UserAuth{}
 	user := models.User{}
 
-	findUser := r.db.Where("username", username).Preload("Roles").First(&user).Error
+	findUser := r.db.Where("username", username).Preload("Roles.Permissions").First(&user).Error
 	if findUser != nil {
 		return nil, findUser
 	}
@@ -48,20 +47,11 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 	}
 
 	exp := time.Now().Add(time.Hour * 24)
-	roles := []responses.RoleResponse{}
-	for _, role := range user.Roles {
-		roles = append(roles, responses.RoleResponse{
-			ID:          role.ID,
-			Name:        role.Name,
-			DisplayName: role.DisplayName,
-		})
-	}
 	claims := configs.JWTConfig{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: exp.Unix(),
 		},
-		ID:    user.ID,
-		Roles: roles,
+		User: user,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	signedToken, tokenError := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -95,7 +85,7 @@ func (r *AuthRepository) Logout(ctx *fiber.Ctx) error {
 	if ok && jwt.Valid {
 		// FIND USER AUTH
 		auth := models.UserAuth{}
-		err := r.db.Where("user_id", claims.ID).First(&auth).Error
+		err := r.db.Where("user_id", claims.User.ID).First(&auth).Error
 		if err != nil {
 			return err
 		}

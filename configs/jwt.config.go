@@ -1,13 +1,11 @@
 package configs
 
 import (
-	"bitbucket.org/rizaalifofficial/gofiber/app/responses"
+	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
 )
 
 type JWTConfig struct {
 	jwt.StandardClaims
-	ID    uuid.UUID                `json:"id"`
-	Roles []responses.RoleResponse `json:"roles"`
+	User models.User `json:"user"`
 }

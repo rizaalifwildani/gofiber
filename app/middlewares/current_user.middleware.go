@@ -25,12 +25,12 @@ func CurrentUser() func(*fiber.Ctx) error {
 
 			if ok && jwt.Valid {
 				// Check the user's role from the claims
-				for _, v := range claims.Roles {
+				for _, v := range claims.User.Roles {
 					if strings.Contains(v.Name, "root") {
 						return c.Next()
 					}
 				}
-				if c.Params("id") == claims.ID.String() {
+				if c.Params("id") == claims.User.ID.String() {
 					return c.Next()
 				}
 				return responses.ErrorForbidden(c)

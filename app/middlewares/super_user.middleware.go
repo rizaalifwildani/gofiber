@@ -25,7 +25,7 @@ func SuperUser() func(*fiber.Ctx) error {
 
 			if ok && jwt.Valid {
 				// Check the user's role from the claims
-				roles := claims.Roles
+				roles := claims.User.Roles
 				for _, role := range roles {
 					if strings.Contains(role.Name, "root") || strings.Contains(role.Name, "super") || strings.Contains(role.Name, "pusat") {
 						return c.Next()
