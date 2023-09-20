@@ -11,27 +11,33 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func ClaimsJWT(c *fiber.Ctx) (string, *jwt.Token, *configs.JWTConfig, bool) {
+func GetToken(c *fiber.Ctx) string {
 	tokenString := c.Get("Authorization")
 	parsedToken := strings.ReplaceAll(tokenString, "Bearer ", "")
+	return parsedToken
+}
+
+func ClaimsJWT(c *fiber.Ctx) (*configs.JWTConfig, bool) {
+	tokenString := GetToken(c)
 	if tokenString == "" {
-		return parsedToken, nil, nil, false
+		return nil, false
 	}
 
 	// Parse the JWT token
-	jwt, err := jwt.ParseWithClaims(parsedToken, &configs.JWTConfig{}, func(token *jwt.Token) (interface{}, error) {
+	jwt, err := jwt.ParseWithClaims(tokenString, &configs.JWTConfig{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return parsedToken, nil, nil, false
+		return nil, false
 	}
-	claims, ok := jwt.Claims.(*configs.JWTConfig)
+	claims := jwt.Claims.(*configs.JWTConfig)
 
-	return parsedToken, jwt, claims, ok
+	return claims, jwt.Valid
 }
 
-func CheckJWT(c *fiber.Ctx) (*jwt.Token, *configs.JWTConfig, bool) {
-	token, jwt, claims, ok := ClaimsJWT(c)
+func CheckJWT(c *fiber.Ctx) bool {
+	token := GetToken(c)
+	claims, ok := ClaimsJWT(c)
 
 	// Check Redis
 	val, err := GetRedis(static.REDIS_TOKEN)
@@ -41,7 +47,7 @@ func CheckJWT(c *fiber.Ctx) (*jwt.Token, *configs.JWTConfig, bool) {
 	currentTime := time.Now()
 
 	if err != nil || token != string(*val) || exp.Before(currentTime) {
-		return nil, nil, false
+		return false
 	}
-	return jwt, claims, ok
+	return ok
 }

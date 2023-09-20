@@ -17,13 +17,9 @@ func SuperUser() func(*fiber.Ctx) error {
 			return responses.ErrorUnauthorized(ctx)
 		},
 		SuccessHandler: func(c *fiber.Ctx) error {
-			jwt, claims, ok := utils.CheckJWT(c)
+			claims, ok := utils.ClaimsJWT(c)
 
-			if jwt == nil {
-				return responses.ErrorResponse(c, fiber.StatusUnauthorized, "invalid token")
-			}
-
-			if ok && jwt.Valid {
+			if ok {
 				// Check the user's role from the claims
 				roles := claims.User.Roles
 				for _, role := range roles {
@@ -34,7 +30,7 @@ func SuperUser() func(*fiber.Ctx) error {
 				return responses.ErrorForbidden(c)
 			}
 
-			return responses.ErrorUnauthorized(c)
+			return responses.ErrorResponse(c, fiber.StatusUnauthorized, "invalid token")
 		},
 	})
 }

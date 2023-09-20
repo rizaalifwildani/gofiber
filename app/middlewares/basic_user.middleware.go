@@ -16,17 +16,13 @@ func BasicUser() func(*fiber.Ctx) error {
 			return responses.ErrorUnauthorized(ctx)
 		},
 		SuccessHandler: func(c *fiber.Ctx) error {
-			jwt, _, ok := utils.CheckJWT(c)
+			_, ok := utils.ClaimsJWT(c)
 
-			if jwt == nil {
-				return responses.ErrorResponse(c, fiber.StatusUnauthorized, "invalid token")
-			}
-
-			if ok && jwt.Valid {
+			if ok {
 				return c.Next()
 			}
 
-			return responses.ErrorUnauthorized(c)
+			return responses.ErrorResponse(c, fiber.StatusUnauthorized, "invalid token")
 		},
 	})
 }

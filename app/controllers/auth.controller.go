@@ -42,3 +42,22 @@ func (c *AuthController) Logout(ctx *fiber.Ctx) error {
 
 	return responses.SuccessResponse(ctx, "logged out successfully")
 }
+
+func (c *AuthController) ChangePassword(ctx *fiber.Ctx) error {
+	/* === RUN VALIDATOR === */
+	req := requests.ChangePasswordRequest{}
+	if err := ctx.BodyParser(&req); err != nil {
+		return responses.ErrorValidationResponse(ctx, err.Error())
+	}
+	errors := requests.NewValidatorRequest(ctx, &req)
+	if len(errors) > 0 {
+		return responses.ErrorValidationResponse(ctx, errors)
+	}
+
+	err := c.repository.ChangePassword(ctx, req.OldPassword, req.NewPassword)
+	if err != nil {
+		return responses.ErrorValidationResponse(ctx, "invalid password")
+	}
+
+	return responses.SuccessResponse(ctx, "password updated successfully")
+}

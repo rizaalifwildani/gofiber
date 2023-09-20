@@ -120,9 +120,9 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 }
 
 func (c *UserController) ProfileUser(ctx *fiber.Ctx) error {
-	jwt, claims, ok := utils.CheckJWT(ctx)
+	claims, ok := utils.ClaimsJWT(ctx)
 
-	if jwt.Valid && ok {
+	if ok {
 		return responses.NewUserResponse(ctx, claims.User)
 	}
 
@@ -130,9 +130,9 @@ func (c *UserController) ProfileUser(ctx *fiber.Ctx) error {
 }
 
 func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
-	jwt, claims, ok := utils.CheckJWT(ctx)
+	claims, ok := utils.ClaimsJWT(ctx)
 
-	if jwt.Valid && ok {
+	if ok {
 		/* === RUN VALIDATOR === */
 		req := requests.UpdateProfileRequest{}
 		if err := ctx.BodyParser(&req); err != nil {

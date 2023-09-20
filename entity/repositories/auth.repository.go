@@ -80,9 +80,9 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 }
 
 func (r *AuthRepository) Logout(ctx *fiber.Ctx) error {
-	_, jwt, claims, ok := utils.ClaimsJWT(ctx)
+	claims, ok := utils.ClaimsJWT(ctx)
 
-	if ok && jwt.Valid {
+	if ok {
 		// FIND USER AUTH
 		auth := models.UserAuth{}
 		err := r.db.Where("user_id", claims.User.ID).First(&auth).Error
@@ -100,6 +100,41 @@ func (r *AuthRepository) Logout(ctx *fiber.Ctx) error {
 		redis := utils.SetRedis(static.REDIS_TOKEN, "", 0)
 		if redis != nil {
 			return redis
+		}
+	}
+
+	return nil
+}
+
+func (r *AuthRepository) ChangePassword(ctx *fiber.Ctx, oldPassword string, newPassword string) error {
+	claims, ok := utils.ClaimsJWT(ctx)
+
+	if ok {
+		// FIND USER AUTH
+		auth := models.UserAuth{}
+		err := r.db.Where("user_id", claims.User.ID).First(&auth).Error
+		if err != nil {
+			return err
+		}
+
+		password, passwordError := utils.GeneratePassword(claims.User.ID.String() + oldPassword)
+		if passwordError != nil {
+			return passwordError
+		}
+
+		if password != auth.Password {
+			return errors.New("invalid password")
+		}
+
+		newPassword, newPasswordErr := utils.GeneratePassword(claims.User.ID.String() + newPassword)
+		if newPasswordErr != nil {
+			return newPasswordErr
+		}
+
+		auth.Password = newPassword
+		updateAuthErr := r.Update(&auth, auth.ID.String())
+		if updateAuthErr != nil {
+			return updateAuthErr
 		}
 	}
 
