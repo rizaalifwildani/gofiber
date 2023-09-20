@@ -27,3 +27,10 @@ type UpdateUserRequest struct {
 	Roles    []models.Role       `json:"roles" validate:"required"`
 	Branches []models.UserBranch `json:"branches,omitempty"`
 }
+
+type UpdateProfileRequest struct {
+	Phone     string `json:"phone" validate:"phoneNumberOrEmpty"`
+	Email     string `json:"email" validate:"emailOrEmpty"`
+	FirstName string `json:"firstName" validate:"max=20"`
+	LastName  string `json:"lastName" validate:"max=30"`
+}

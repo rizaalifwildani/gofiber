@@ -14,5 +14,4 @@ func AuthRoute(router fiber.Router, db *gorm.DB) {
 	route := router.Group("/auth")
 	route.Post("/login", controller.Login)
 	route.Post("/logout", middlewares.BasicUser(), controller.Logout)
-	route.Get("/profile", middlewares.BasicUser(), controller.ProfileUser)
 }

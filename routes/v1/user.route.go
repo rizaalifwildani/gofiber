@@ -11,9 +11,11 @@ import (
 func UserRoute(router fiber.Router, db *gorm.DB) {
 	repository := repositories.NewUserRepository(db)
 	controller := controllers.NewUserController(repository)
-	route := router.Group("/users", middlewares.SuperUser())
-	route.Post("/", controller.CreateUser)
-	route.Get("/", controller.AllUser)
-	route.Get("/:id", controller.ShowUser)
-	route.Patch("/:id", controller.UpdateUser)
+	route := router.Group("/users")
+	route.Get("/profile", middlewares.BasicUser(), controller.ProfileUser)
+	route.Patch("/profile", middlewares.BasicUser(), controller.UpdateProfile)
+	route.Post("/", middlewares.SuperUser(), controller.CreateUser)
+	route.Get("/", middlewares.SuperUser(), controller.AllUser)
+	route.Get("/:id", middlewares.SuperUser(), controller.ShowUser)
+	route.Patch("/:id", middlewares.SuperUser(), controller.UpdateUser)
 }

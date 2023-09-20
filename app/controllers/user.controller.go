@@ -100,6 +100,7 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 		LastName:  req.LastName,
 		RegNumber: req.RegNumber,
 		Roles:     req.Roles,
+		Branches:  req.Branches,
 	}
 	authModel := models.UserAuth{
 		UserID:    parsedUUID,
@@ -116,4 +117,48 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 	}
 
 	return responses.SuccessResponse(ctx, "user updated successfully")
+}
+
+func (c *UserController) ProfileUser(ctx *fiber.Ctx) error {
+	jwt, claims, ok := utils.CheckJWT(ctx)
+
+	if jwt.Valid && ok {
+		return responses.NewUserResponse(ctx, claims.User)
+	}
+
+	return responses.ErrorUnauthorized(ctx)
+}
+
+func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
+	jwt, claims, ok := utils.CheckJWT(ctx)
+
+	if jwt.Valid && ok {
+		/* === RUN VALIDATOR === */
+		req := requests.UpdateProfileRequest{}
+		if err := ctx.BodyParser(&req); err != nil {
+			return responses.ErrorValidationResponse(ctx, err.Error())
+		}
+		errors := requests.NewValidatorRequest(ctx, &req)
+		if len(errors) > 0 {
+			return responses.ErrorValidationResponse(ctx, errors)
+		}
+
+		/* === PROCESS === */
+		parsedUUID := claims.User.ID
+		model := models.User{
+			ID:        parsedUUID,
+			Email:     req.Email,
+			Phone:     req.Phone,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+		}
+		err := c.repository.UpdateUser(&model, nil)
+		if err != nil {
+			return responses.ErrorBadRequest(ctx)
+		}
+
+		return responses.SuccessResponse(ctx, "profile updated successfully")
+	}
+
+	return responses.ErrorUnauthorized(ctx)
 }

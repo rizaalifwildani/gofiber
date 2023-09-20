@@ -90,10 +90,18 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 	}
 
 	return r.db.Transaction(func(tx *gorm.DB) error {
+		// === USER DETAIL === //
+		userErr := r.Update(*model, model.ID.String())
+		if userErr != nil {
+			return userErr
+		}
+
 		// === USER ROLE === //
-		roleErr := r.UpdateAssociation(*model, "Roles", roles)
-		if roleErr != nil {
-			return roleErr
+		if len(roles) > 0 {
+			roleErr := r.UpdateAssociation(*model, "Roles", roles)
+			if roleErr != nil {
+				return roleErr
+			}
 		}
 
 		// === USER BRANCH === //
@@ -105,21 +113,23 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 		}
 
 		// === USER AUTH === //
-		password, err := utils.GeneratePassword(model.ID.String() + authModel.Password)
-		if err != nil {
-			passwordError := errors.New("invalid password")
-			return passwordError
-		}
-		userAuth := models.UserAuth{
-			ID:        authModel.ID,
-			UserID:    authModel.UserID,
-			Password:  password,
-			Token:     authModel.Token,
-			ExpiredAt: authModel.ExpiredAt,
-		}
-		userAuthErr := tx.Model(&userAuth).Where("id = ?", userAuth.ID).Updates(userAuth).Error
-		if userAuthErr != nil {
-			return userAuthErr
+		if authModel != nil {
+			password, err := utils.GeneratePassword(model.ID.String() + authModel.Password)
+			if err != nil {
+				passwordError := errors.New("invalid password")
+				return passwordError
+			}
+			userAuth := models.UserAuth{
+				ID:        authModel.ID,
+				UserID:    authModel.UserID,
+				Password:  password,
+				Token:     authModel.Token,
+				ExpiredAt: authModel.ExpiredAt,
+			}
+			userAuthErr := tx.Model(&userAuth).Where("id = ?", userAuth.ID).Updates(userAuth).Error
+			if userAuthErr != nil {
+				return userAuthErr
+			}
 		}
 
 		return nil

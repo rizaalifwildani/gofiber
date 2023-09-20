@@ -4,7 +4,6 @@ import (
 	"bitbucket.org/rizaalifofficial/gofiber/app/requests"
 	"bitbucket.org/rizaalifofficial/gofiber/app/responses"
 	"bitbucket.org/rizaalifofficial/gofiber/entity/repositories"
-	"bitbucket.org/rizaalifofficial/gofiber/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -42,13 +41,4 @@ func (c *AuthController) Logout(ctx *fiber.Ctx) error {
 	}
 
 	return responses.SuccessResponse(ctx, "logged out successfully")
-}
-
-func (c *AuthController) ProfileUser(ctx *fiber.Ctx) error {
-	jwt, claims, ok := utils.CheckJWT(ctx)
-	if ok && jwt.Valid {
-		return responses.NewUserResponse(ctx, claims.User)
-	} else {
-		return responses.ErrorUnauthorized(ctx)
-	}
 }
