@@ -84,7 +84,8 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 	for _, branch := range model.Branches {
 		branches = append(branches, &models.UserBranch{
 			UserID:   model.ID,
-			BranchID: branch.ID,
+			BranchID: branch.BranchID,
+			Status:   branch.Status,
 		})
 	}
 

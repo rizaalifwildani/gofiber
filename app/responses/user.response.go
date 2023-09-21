@@ -40,7 +40,7 @@ func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 	branches := []BranchResponse{}
 	for _, branch := range m.Branches {
 		branches = append(branches, BranchResponse{
-			ID:          branch.ID,
+			ID:          branch.BranchID,
 			Name:        branch.Branch.Name,
 			Code:        branch.Branch.Code,
 			Address:     branch.Branch.Address,

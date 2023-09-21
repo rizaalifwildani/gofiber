@@ -27,9 +27,20 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 	auth := models.UserAuth{}
 	user := models.User{}
 
-	findUser := r.db.Where("username", username).Preload("Roles.Permissions.Permission").First(&user).Error
+	findUser := r.db.Where("username", username).Preload("Roles.Permissions.Permission").Preload("Branches.Branch").First(&user).Error
 	if findUser != nil {
 		return nil, findUser
+	}
+
+	isActive := false
+	for _, b := range user.Branches {
+		if b.Status == "active" {
+			isActive = true
+		}
+	}
+
+	if !isActive {
+		return nil, errors.New("inactive user")
 	}
 
 	findAuth := r.db.Where("user_id", user.ID).First(&auth).Error

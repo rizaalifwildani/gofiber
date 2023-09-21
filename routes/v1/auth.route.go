@@ -11,8 +11,8 @@ import (
 func AuthRoute(router fiber.Router, db *gorm.DB) {
 	repository := repositories.NewAuthRepository(db)
 	controller := controllers.NewAuthController(repository)
-	route := router.Group("/auth")
+	route := router.Group("/auth", middlewares.BasicUser())
 	route.Post("/login", controller.Login)
-	route.Post("/logout", middlewares.BasicUser(), controller.Logout)
-	route.Put("/password", middlewares.CurrentUser(), controller.ChangePassword)
+	route.Post("/logout", controller.Logout)
+	route.Put("/password", controller.ChangePassword)
 }
