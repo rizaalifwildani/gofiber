@@ -78,11 +78,7 @@ func (r *BaseRepository) Update(model interface{}, id string) error {
 
 func (r *BaseRepository) UpdateAssociation(model interface{}, associationName string, data interface{}) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Omit(associationName).Updates(model).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(&model).Association(associationName).Unscoped().Clear(); err != nil {
+		if err := tx.Model(model).Association(associationName).Unscoped().Clear(); err != nil {
 			return err
 		}
 

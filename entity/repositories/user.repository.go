@@ -52,7 +52,6 @@ func (r *UserRepository) FindAllUser(filters []FilterType) ([]models.User, error
 	model := []models.User{}
 	query := r.db.Model(&model)
 	query.
-		Preload("Roles").
 		Joins("JOIN user_roles ON users.id = user_roles.user_id").
 		Joins("JOIN roles ON user_roles.role_id = roles.id").
 		Where("roles.name != ?", "root")
@@ -98,7 +97,7 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 
 		// === USER ROLE === //
 		if len(roles) > 0 {
-			roleErr := r.UpdateAssociation(*model, "Roles", roles)
+			roleErr := r.UpdateAssociation(&model, "Roles", roles)
 			if roleErr != nil {
 				return roleErr
 			}
@@ -106,7 +105,7 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 
 		// === USER BRANCH === //
 		if len(branches) > 0 {
-			branchErr := r.UpdateAssociation(*model, "Branches", branches)
+			branchErr := r.UpdateAssociation(&model, "Branches", branches)
 			if branchErr != nil {
 				return branchErr
 			}

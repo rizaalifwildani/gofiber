@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"fmt"
+
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"gorm.io/gorm"
 )
@@ -14,9 +16,17 @@ func NewRoleRepository(db *gorm.DB) *RoleRepository {
 }
 
 func (r *RoleRepository) FindAllRole(filters []FilterType) ([]models.Role, error) {
-	data := []models.Role{}
-	err := r.Find(&data, filters, "name")
-	return data, err
+	model := []models.Role{}
+	query := r.db.Model(&model)
+	query.Where("name != ?", "root")
+	for _, v := range filters {
+		if v.Value != "" {
+			query.Where("LOWER("+v.Key+")"+" ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+		}
+	}
+	query.Order(fmt.Sprintf("%v DESC", "name"))
+	err := query.Find(&model)
+	return model, err.Error
 }
 
 func (r *RoleRepository) FindRole(id string) (models.Role, error) {
@@ -35,13 +45,13 @@ func (r *RoleRepository) UpdateRole(model *models.Role) error {
 		})
 	}
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		roleErr := r.Update(*model, model.ID.String())
+		roleErr := r.Update(&model, model.ID.String())
 		if roleErr != nil {
 			return roleErr
 		}
 
 		if len(permissions) > 0 {
-			roleErr := r.UpdateAssociation(*model, "Permissions", permissions)
+			roleErr := r.UpdateAssociation(&model, "Permissions", permissions)
 			if roleErr != nil {
 				return roleErr
 			}
