@@ -13,5 +13,5 @@ type Role struct {
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
 
-	Permissions []Permission `gorm:"many2many:role_permissions"`
+	Permissions []RolePermission `gorm:"foreignKey:RoleID"`
 }

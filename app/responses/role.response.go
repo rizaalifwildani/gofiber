@@ -17,9 +17,10 @@ func NewRoleResponse(ctx *fiber.Ctx, m models.Role) error {
 	permissions := []PermissionResponse{}
 	for _, permission := range m.Permissions {
 		permissions = append(permissions, PermissionResponse{
-			ID:          permission.ID,
-			Name:        permission.Name,
-			DisplayName: permission.DisplayName,
+			ID:          permission.PermissionID,
+			Name:        permission.Permission.Name,
+			DisplayName: permission.Permission.DisplayName,
+			Actions:     permission.Actions,
 		})
 	}
 	data := RoleResponse{

@@ -15,5 +15,5 @@ func BranchRoute(router fiber.Router, db *gorm.DB) {
 	route.Post("/", middlewares.BasicUser(), controller.CreateBranch)
 	route.Get("/", controller.AllBranch)
 	route.Get("/:id", middlewares.BasicUser(), controller.ShowBranch)
-	route.Patch("/:id", middlewares.BasicUser(), controller.UpdateBranch)
+	route.Put("/:id", middlewares.BasicUser(), controller.UpdateBranch)
 }

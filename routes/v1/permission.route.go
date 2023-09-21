@@ -15,5 +15,5 @@ func PermissionRoute(router fiber.Router, db *gorm.DB) {
 	route.Post("/", controller.CreatePermission)
 	route.Get("/", controller.AllPermission)
 	route.Get("/:id", controller.ShowPermission)
-	route.Patch("/:id", controller.UpdatePermission)
+	route.Put("/:id", controller.UpdatePermission)
 }

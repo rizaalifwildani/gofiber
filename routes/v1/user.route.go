@@ -13,9 +13,9 @@ func UserRoute(router fiber.Router, db *gorm.DB) {
 	controller := controllers.NewUserController(repository)
 	route := router.Group("/users")
 	route.Get("/profile", middlewares.CurrentUser(), controller.ProfileUser)
-	route.Patch("/profile", middlewares.CurrentUser(), controller.UpdateProfile)
+	route.Put("/profile", middlewares.CurrentUser(), controller.UpdateProfile)
 	route.Post("/", middlewares.SuperUser(), controller.CreateUser)
 	route.Get("/", middlewares.SuperUser(), controller.AllUser)
 	route.Get("/:id", middlewares.SuperUser(), controller.ShowUser)
-	route.Patch("/:id", middlewares.SuperUser(), controller.UpdateUser)
+	route.Put("/:id", middlewares.SuperUser(), controller.UpdateUser)
 }

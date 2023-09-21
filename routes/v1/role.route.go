@@ -15,5 +15,5 @@ func RoleRoute(router fiber.Router, db *gorm.DB) {
 	route.Post("/", controller.CreateRole)
 	route.Get("/", controller.AllRole)
 	route.Get("/:id", controller.ShowRole)
-	route.Patch("/:id", controller.UpdateRole)
+	route.Put("/:id", controller.UpdateRole)
 }

@@ -10,6 +10,7 @@ type PermissionResponse struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	DisplayName string    `json:"displayName"`
+	Actions     string    `json:"actions,omitempty"`
 }
 
 func NewPermissionResponse(ctx *fiber.Ctx, m models.Permission) error {

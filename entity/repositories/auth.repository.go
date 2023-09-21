@@ -27,7 +27,7 @@ func (r *AuthRepository) Login(username string, password string) (*models.UserAu
 	auth := models.UserAuth{}
 	user := models.User{}
 
-	findUser := r.db.Where("username", username).Preload("Roles.Permissions").First(&user).Error
+	findUser := r.db.Where("username", username).Preload("Roles.Permissions.Permission").First(&user).Error
 	if findUser != nil {
 		return nil, findUser
 	}

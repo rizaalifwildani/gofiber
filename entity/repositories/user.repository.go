@@ -17,7 +17,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{
 		BaseRepository{
 			db:      db,
-			Preload: []string{"Roles.Permissions", "Branches.Branch"},
+			Preload: []string{"Roles.Permissions.Permission", "Branches.Branch"},
 		},
 	}
 }
