@@ -69,6 +69,7 @@ func (c *MemberController) AllMember(ctx *fiber.Ctx) error {
 		{Key: "email", Value: ctx.Query("email")},
 		{Key: "firstName", Value: ctx.Query("firstName")},
 		{Key: "lastName", Value: ctx.Query("lastName")},
+		{Key: "branch", Value: ctx.Query("branch")},
 	}
 	models, _ := c.repository.FindAllMember(filters)
 	return responses.NewMemberCollections(ctx, models)

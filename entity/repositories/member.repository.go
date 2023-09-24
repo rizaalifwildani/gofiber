@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"fmt"
+
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"gorm.io/gorm"
 )
@@ -14,9 +16,23 @@ func NewMemberRepository(db *gorm.DB) *MemberRepository {
 }
 
 func (r *MemberRepository) FindAllMember(filters []FilterType) ([]models.Member, error) {
-	data := []models.Member{}
-	err := r.Find(&data, filters, "created_at")
-	return data, err
+	model := []models.Member{}
+	query := r.db.Model(&model)
+	for _, v := range filters {
+		if v.Value != "" {
+			if v.Key == "branch" {
+				query.
+					Joins("JOIN member_branches ON members.id = member_branches.member_id").
+					Joins("JOIN branches ON member_branches.branch_id = branches.id").
+					Where("LOWER(branches.name) ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			} else {
+				query.Where("LOWER("+v.Key+")"+" ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			}
+		}
+	}
+	query.Order(fmt.Sprintf("%v DESC", "created_at"))
+	err := query.Find(&model)
+	return model, err.Error
 }
 
 func (r *MemberRepository) FindMember(id string) (models.Member, error) {

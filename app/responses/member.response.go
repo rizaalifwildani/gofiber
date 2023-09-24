@@ -12,17 +12,17 @@ type MemberResponse struct {
 	Email          string           `json:"email"`
 	FirstName      string           `json:"firstName"`
 	LastName       string           `json:"lastName"`
-	IdentityNumber string           `json:"identityNumber"`
-	PlaceOfBirth   string           `json:"placeOfBirth"`
-	Birthdate      string           `json:"birthdate"`
-	Gender         string           `json:"gender"`
-	Nationality    string           `json:"nationality"`
-	Address        string           `json:"address"`
-	PostalCode     string           `json:"postalCode"`
-	HomePhone      string           `json:"homePhone"`
-	OfficePhone    string           `json:"officePhone"`
-	Education      string           `json:"education"`
-	Branches       []BranchResponse `json:"branches,omitempty"`
+	IdentityNumber string           `json:"identityNumber,omitempty"`
+	PlaceOfBirth   string           `json:"placeOfBirth,omitempty"`
+	Birthdate      string           `json:"birthdate,omitempty"`
+	Gender         string           `json:"gender,omitempty"`
+	Nationality    string           `json:"nationality,omitempty"`
+	Address        string           `json:"address,omitempty"`
+	PostalCode     string           `json:"postalCode,omitempty"`
+	HomePhone      string           `json:"homePhone,omitempty"`
+	OfficePhone    string           `json:"officePhone,omitempty"`
+	Education      string           `json:"education,omitempty"`
+	Branches       []BranchResponse `json:"branches,omitempty,omitempty"`
 }
 
 func NewMemberResponse(ctx *fiber.Ctx, m models.Member) error {
