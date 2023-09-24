@@ -9,4 +9,5 @@ CREATE TABLE branches (
     updated_at TIMESTAMP
 );
 
-CREATE UNIQUE INDEX idx_branches_search ON branches(name, code);
+CREATE UNIQUE INDEX idx_branches_name ON branches(name);
+CREATE UNIQUE INDEX idx_branches_code ON branches(code);

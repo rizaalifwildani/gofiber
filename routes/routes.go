@@ -18,4 +18,5 @@ func InitRouter(app *fiber.App, db *gorm.DB) {
 	v1.RoleRoute(v1Route, db)
 	v1.PermissionRoute(v1Route, db)
 	v1.BranchRoute(v1Route, db)
+	v1.MemberRoute(v1Route, db)
 }

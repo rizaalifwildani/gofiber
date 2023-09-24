@@ -51,11 +51,31 @@ func emailOrEmpty(fl validator.FieldLevel) bool {
 	return matched && fieldLen >= 5 && fieldLen <= 50
 }
 
+func birthDate(fl validator.FieldLevel) bool {
+	fieldValue := fl.Field().String()
+
+	// Check if the field is empty
+	if fieldValue == "" {
+		return false
+	}
+
+	var dateRegex = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
+
+	return dateRegex.MatchString(fieldValue)
+}
+
+func validateGender(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	return value == "male" || value == "female"
+}
+
 func NewValidatorRequest(ctx *fiber.Ctx, model interface{}) []*ValidatorErrorData {
 	errors := []*ValidatorErrorData{}
 	validate := validator.New()
 	validate.RegisterValidation("phoneNumberOrEmpty", phoneNumberOrEmpty)
 	validate.RegisterValidation("emailOrEmpty", emailOrEmpty)
+	validate.RegisterValidation("birthDate", birthDate)
+	validate.RegisterValidation("validateGender", validateGender)
 	err := validate.Struct(model)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {

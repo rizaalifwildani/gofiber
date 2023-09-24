@@ -11,6 +11,8 @@ CREATE TABLE users (
     updated_at TIMESTAMP
 );
 CREATE UNIQUE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_phone ON users(phone);
-CREATE INDEX idx_users_searchs ON users(email, first_name, last_name);
-CREATE INDEX idx_reg_number ON users(reg_number);
+CREATE INDEX idx_users_phone ON users(phone);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_first_name ON users(first_name);
+CREATE INDEX idx_users_last_name ON users(last_name);
+CREATE INDEX idx_users_reg_number ON users(reg_number);

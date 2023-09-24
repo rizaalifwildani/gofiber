@@ -7,12 +7,12 @@ import (
 )
 
 type BranchResponse struct {
-	ID          uuid.UUID               `json:"id"`
-	Name        string                  `json:"name"`
-	Code        string                  `json:"code"`
-	Address     string                  `json:"address"`
-	Description string                  `json:"description"`
-	Status      models.UserBranchStatus `json:"status,omitempty"`
+	ID          uuid.UUID           `json:"id"`
+	Name        string              `json:"name"`
+	Code        string              `json:"code"`
+	Address     string              `json:"address"`
+	Description string              `json:"description"`
+	Status      models.BranchStatus `json:"status,omitempty"`
 }
 
 func NewBranchResponse(ctx *fiber.Ctx, m models.Branch) error {

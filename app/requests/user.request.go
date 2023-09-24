@@ -6,7 +6,7 @@ type CreateUserRequest struct {
 	Username  string `json:"username" validate:"required,max=25"`
 	Phone     string `json:"phone" validate:"phoneNumberOrEmpty"`
 	Email     string `json:"email" validate:"emailOrEmpty"`
-	FirstName string `json:"firstName" validate:"max=20"`
+	FirstName string `json:"firstName" validate:"required,max=20"`
 	LastName  string `json:"lastName" validate:"max=30"`
 	RegNumber string `json:"regNumber" validate:"max=50"`
 	Password  string `json:"password" validate:"required"`
@@ -19,7 +19,7 @@ type UpdateUserRequest struct {
 	Username  string `json:"username" validate:"max=25"`
 	Phone     string `json:"phone" validate:"phoneNumberOrEmpty"`
 	Email     string `json:"email" validate:"emailOrEmpty"`
-	FirstName string `json:"firstName" validate:"max=20"`
+	FirstName string `json:"firstName" validate:"required,max=20"`
 	LastName  string `json:"lastName" validate:"max=30"`
 	RegNumber string `json:"regNumber" validate:"max=50"`
 	Password  string `json:"password" validate:"required"`
@@ -31,6 +31,6 @@ type UpdateUserRequest struct {
 type UpdateProfileRequest struct {
 	Phone     string `json:"phone" validate:"phoneNumberOrEmpty"`
 	Email     string `json:"email" validate:"emailOrEmpty"`
-	FirstName string `json:"firstName" validate:"max=20"`
+	FirstName string `json:"firstName" validate:"required;max=20"`
 	LastName  string `json:"lastName" validate:"max=30"`
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserBranch struct {
+type MemberBranch struct {
 	ID        uuid.UUID    `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	UserID    uuid.UUID    `gorm:"type:uuid"`
+	MemberID  uuid.UUID    `gorm:"type:uuid"`
 	BranchID  uuid.UUID    `gorm:"type:uuid"`
 	Status    BranchStatus `gorm:"type:ENUM('pending', 'active', 'inactive');default:'pending'"`
 	CreatedAt time.Time    `gorm:"autoCreateTime"`
