@@ -5,12 +5,32 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/morkid/paginate"
 )
 
 type Response struct {
-	Status  int         `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Status     int         `json:"status"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+	Pagination Pagination  `json:"pagination,omitempty"`
+}
+
+type ResponsePagination struct {
+	Status  int            `json:"status"`
+	Message string         `json:"message"`
+	Data    PaginationData `json:"data"`
+}
+
+type PaginationData struct {
+	Items      interface{} `json:"items"`
+	Pagination Pagination  `json:"pagination,omitempty"`
+}
+
+type Pagination struct {
+	Page       int64 `json:"page"`
+	Size       int64 `json:"size"`
+	TotalPage  int64 `json:"totalPage"`
+	TotalItems int64 `json:"totalItems"`
 }
 
 func NewResponse(c *fiber.Ctx, data *Response) error {
@@ -24,6 +44,23 @@ func SuccessResponse(c *fiber.Ctx, data interface{}) error {
 		Data:    data,
 	}
 	return NewResponse(c, &res)
+}
+
+func PaginationResponse(c *fiber.Ctx, data paginate.Page) error {
+	res := ResponsePagination{
+		Status:  fiber.StatusOK,
+		Message: http.StatusText(fiber.StatusOK),
+		Data: PaginationData{
+			Items: data.Items,
+			Pagination: Pagination{
+				Page:       data.Page,
+				Size:       data.Size,
+				TotalPage:  data.TotalPages,
+				TotalItems: data.Total,
+			},
+		},
+	}
+	return c.Status(res.Status).JSON(res)
 }
 
 func Resource(ctx *fiber.Ctx, model interface{}, res interface{}) error {

@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/morkid/paginate"
 )
 
 type MemberResponse struct {
@@ -22,7 +23,7 @@ type MemberResponse struct {
 	HomePhone      string           `json:"homePhone,omitempty"`
 	OfficePhone    string           `json:"officePhone,omitempty"`
 	Education      string           `json:"education,omitempty"`
-	Branches       []BranchResponse `json:"branches,omitempty,omitempty"`
+	Branches       []BranchResponse `json:"branches,omitempty"`
 }
 
 func NewMemberResponse(ctx *fiber.Ctx, m models.Member) error {
@@ -58,11 +59,12 @@ func NewMemberResponse(ctx *fiber.Ctx, m models.Member) error {
 	return SuccessResponse(ctx, data)
 }
 
-func NewMemberCollections(ctx *fiber.Ctx, m []models.Member) error {
-	data := []MemberResponse{}
+func NewMemberCollections(ctx *fiber.Ctx, data paginate.Page) error {
+	members := data.Items.(*[]models.Member)
+	memberResponses := []MemberResponse{}
 
-	for _, v := range m {
-		data = append(data, MemberResponse{
+	for _, v := range *members {
+		memberResponses = append(memberResponses, MemberResponse{
 			ID:             v.ID,
 			Phone:          v.Phone,
 			Email:          v.Email,
@@ -71,6 +73,7 @@ func NewMemberCollections(ctx *fiber.Ctx, m []models.Member) error {
 			IdentityNumber: v.IdentityNumber,
 		})
 	}
+	data.Items = memberResponses
 
-	return SuccessResponse(ctx, data)
+	return PaginationResponse(ctx, data)
 }

@@ -27,6 +27,12 @@ func NewBaseRepository(db *gorm.DB, preload []string) *BaseRepository {
 	return &BaseRepository{db: db, Preload: preload}
 }
 
+func (r *BaseRepository) Count(model interface{}) error {
+	var totalData int64
+	err := r.db.Model(&model).Count(&totalData).Error
+	return err
+}
+
 func (r *BaseRepository) Create(model interface{}) error {
 	err := r.db.Create(model).Error
 	return err

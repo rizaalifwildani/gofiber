@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
+	"github.com/gofiber/fiber/v2"
+	"github.com/morkid/paginate"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +17,7 @@ func NewMemberRepository(db *gorm.DB) *MemberRepository {
 	return &MemberRepository{BaseRepository{db: db, Preload: []string{"Branches.Branch"}}}
 }
 
-func (r *MemberRepository) FindAllMember(filters []FilterType) ([]models.Member, error) {
+func (r *MemberRepository) FindAllMember(c *fiber.Ctx, filters []FilterType) (paginate.Page, error) {
 	model := []models.Member{}
 	query := r.db.Model(&model)
 	for _, v := range filters {
@@ -32,7 +34,9 @@ func (r *MemberRepository) FindAllMember(filters []FilterType) ([]models.Member,
 	}
 	query.Order(fmt.Sprintf("%v DESC", "created_at"))
 	err := query.Find(&model)
-	return model, err.Error
+	pg := paginate.New()
+	result := pg.With(query).Request(c.Request()).Response(&model)
+	return result, err.Error
 }
 
 func (r *MemberRepository) FindMember(id string) (models.Member, error) {
