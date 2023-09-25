@@ -14,7 +14,7 @@ type MemberRepository struct {
 }
 
 func NewMemberRepository(db *gorm.DB) *MemberRepository {
-	return &MemberRepository{BaseRepository{db: db, Preload: []string{"Branches.Branch"}}}
+	return &MemberRepository{BaseRepository{db: db, Preload: []string{"Branches.Branch", "Occupation"}}}
 }
 
 func (r *MemberRepository) FindAllMember(c *fiber.Ctx, filters []FilterType) (paginate.Page, error) {
@@ -64,6 +64,22 @@ func (r *MemberRepository) UpdateMember(model *models.Member) error {
 			roleErr := r.UpdateAssociation(&model, "Branches", branches)
 			if roleErr != nil {
 				return roleErr
+			}
+		}
+
+		// UPDATE OCCUPATION
+		occupation := models.MemberOccupation{}
+		findOccupation := tx.Model(&occupation).Where("member_id = ?", model.ID).First(&occupation).Error
+		if findOccupation == nil {
+			occupation.Company = model.Occupation.Company
+			occupation.Department = model.Occupation.Department
+			occupation.PostalCode = model.Occupation.PostalCode
+			occupation.Phone = model.Occupation.Phone
+			occupation.Fax = model.Occupation.Fax
+			occupation.Email = model.Occupation.Email
+			occupationErr := r.Update(&occupation, occupation.ID.String())
+			if occupationErr != nil {
+				return occupationErr
 			}
 		}
 

@@ -64,9 +64,14 @@ func birthDate(fl validator.FieldLevel) bool {
 	return dateRegex.MatchString(fieldValue)
 }
 
-func validateGender(fl validator.FieldLevel) bool {
+func gender(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	return value == "male" || value == "female"
+}
+
+func branchStatus(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	return value == "active" || value == "inactive" || value == "pending"
 }
 
 func NewValidatorRequest(ctx *fiber.Ctx, model interface{}) []*ValidatorErrorData {
@@ -75,7 +80,8 @@ func NewValidatorRequest(ctx *fiber.Ctx, model interface{}) []*ValidatorErrorDat
 	validate.RegisterValidation("phoneNumberOrEmpty", phoneNumberOrEmpty)
 	validate.RegisterValidation("emailOrEmpty", emailOrEmpty)
 	validate.RegisterValidation("birthDate", birthDate)
-	validate.RegisterValidation("validateGender", validateGender)
+	validate.RegisterValidation("gender", gender)
+	validate.RegisterValidation("branchStatus", branchStatus)
 	err := validate.Struct(model)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {

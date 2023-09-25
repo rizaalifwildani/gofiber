@@ -25,5 +25,6 @@ type Member struct {
 	CreatedAt      time.Time `gorm:"autoCreateTime"`
 	UpdatedAt      time.Time `gorm:"autoUpdateTime"`
 
-	Branches []MemberBranch `gorm:"foreignKey:MemberID"`
+	Occupation MemberOccupation `gorm:"foreignKey:MemberID"`
+	Branches   []MemberBranch   `gorm:"foreignKey:MemberID"`
 }

@@ -8,22 +8,23 @@ import (
 )
 
 type MemberResponse struct {
-	ID             uuid.UUID        `json:"id"`
-	Phone          string           `json:"phone"`
-	Email          string           `json:"email"`
-	FirstName      string           `json:"firstName"`
-	LastName       string           `json:"lastName"`
-	IdentityNumber string           `json:"identityNumber,omitempty"`
-	PlaceOfBirth   string           `json:"placeOfBirth,omitempty"`
-	Birthdate      string           `json:"birthdate,omitempty"`
-	Gender         string           `json:"gender,omitempty"`
-	Nationality    string           `json:"nationality,omitempty"`
-	Address        string           `json:"address,omitempty"`
-	PostalCode     string           `json:"postalCode,omitempty"`
-	HomePhone      string           `json:"homePhone,omitempty"`
-	OfficePhone    string           `json:"officePhone,omitempty"`
-	Education      string           `json:"education,omitempty"`
-	Branches       []BranchResponse `json:"branches,omitempty"`
+	ID             uuid.UUID                 `json:"id"`
+	Phone          string                    `json:"phone"`
+	Email          string                    `json:"email"`
+	FirstName      string                    `json:"firstName"`
+	LastName       string                    `json:"lastName"`
+	IdentityNumber string                    `json:"identityNumber,omitempty"`
+	PlaceOfBirth   string                    `json:"placeOfBirth,omitempty"`
+	Birthdate      string                    `json:"birthdate,omitempty"`
+	Gender         string                    `json:"gender,omitempty"`
+	Nationality    string                    `json:"nationality,omitempty"`
+	Address        string                    `json:"address,omitempty"`
+	PostalCode     string                    `json:"postalCode,omitempty"`
+	HomePhone      string                    `json:"homePhone,omitempty"`
+	OfficePhone    string                    `json:"officePhone,omitempty"`
+	Education      string                    `json:"education,omitempty"`
+	Branches       []BranchResponse          `json:"branches,omitempty"`
+	Occupation     *MemberOccupationResponse `json:"occupation,omitempty"`
 }
 
 func NewMemberResponse(ctx *fiber.Ctx, m models.Member) error {
@@ -55,6 +56,16 @@ func NewMemberResponse(ctx *fiber.Ctx, m models.Member) error {
 		OfficePhone:    m.OfficePhone,
 		Education:      m.Education,
 		Branches:       branches,
+		Occupation: &MemberOccupationResponse{
+			ID:         m.Occupation.ID,
+			Company:    m.Occupation.Company,
+			Department: m.Occupation.Department,
+			Address:    m.Occupation.Address,
+			PostalCode: m.Occupation.PostalCode,
+			Phone:      m.Occupation.Phone,
+			Fax:        m.Occupation.Fax,
+			Email:      m.Occupation.Email,
+		},
 	}
 	return SuccessResponse(ctx, data)
 }
@@ -71,6 +82,7 @@ func NewMemberCollections(ctx *fiber.Ctx, data paginate.Page) error {
 			FirstName:      v.FirstName,
 			LastName:       v.LastName,
 			IdentityNumber: v.IdentityNumber,
+			Occupation:     nil,
 		})
 	}
 	data.Items = memberResponses

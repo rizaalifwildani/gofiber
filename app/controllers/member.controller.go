@@ -35,6 +35,12 @@ func (c *MemberController) CreateMember(ctx *fiber.Ctx) error {
 	if birthDateErr != nil {
 		return responses.ErrorValidationResponse(ctx, "invalid birthdate")
 	}
+	occupation := models.MemberOccupation{
+		Company:    req.Occupation.Company,
+		Department: req.Occupation.Department,
+		Address:    req.Occupation.Address,
+		PostalCode: req.Occupation.PostalCode,
+	}
 	model := models.Member{
 		Phone:          req.Phone,
 		Email:          req.Email,
@@ -51,6 +57,7 @@ func (c *MemberController) CreateMember(ctx *fiber.Ctx) error {
 		OfficePhone:    req.OfficePhone,
 		Education:      req.Education,
 		Branches:       req.Branches,
+		Occupation:     occupation,
 	}
 	err := c.repository.Create(&model)
 	if err != nil {
@@ -102,6 +109,12 @@ func (c *MemberController) UpdateMember(ctx *fiber.Ctx) error {
 	if birthDateErr != nil {
 		return responses.ErrorValidationResponse(ctx, "invalid birthdate")
 	}
+	occupation := models.MemberOccupation{
+		Company:    req.Occupation.Company,
+		Department: req.Occupation.Department,
+		Address:    req.Occupation.Address,
+		PostalCode: req.Occupation.PostalCode,
+	}
 	model := models.Member{
 		ID:             parsedUUID,
 		Phone:          req.Phone,
@@ -119,6 +132,7 @@ func (c *MemberController) UpdateMember(ctx *fiber.Ctx) error {
 		OfficePhone:    req.OfficePhone,
 		Education:      req.Education,
 		Branches:       req.Branches,
+		Occupation:     occupation,
 	}
 	err := c.repository.UpdateMember(&model)
 	if err != nil {
