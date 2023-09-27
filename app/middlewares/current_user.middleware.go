@@ -22,7 +22,7 @@ func CurrentUser() func(*fiber.Ctx) error {
 			if ok {
 				// Check the user's role from the claims
 				for _, v := range claims.User.Roles {
-					if strings.Contains(v.Name, "root") {
+					if strings.Contains(v.Role.Name, "root") {
 						return c.Next()
 					}
 				}

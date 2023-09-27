@@ -63,8 +63,10 @@ func (c *UserController) AllUser(ctx *fiber.Ctx) error {
 		{Key: "first_name", Value: ctx.Query("firstName")},
 		{Key: "last_name", Value: ctx.Query("lastName")},
 		{Key: "reg_number", Value: ctx.Query("regNumber")},
+		{Key: "branch", Value: ctx.Query("branch")},
+		{Key: "role", Value: ctx.Query("role")},
 	}
-	models, _ := c.repository.FindAllUser(filters)
+	models, _ := c.repository.FindAllUser(ctx, filters)
 	return responses.NewUserCollections(ctx, models)
 }
 

@@ -17,6 +17,6 @@ type User struct {
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 
-	Roles    []Role       `gorm:"many2many:user_roles"`
+	Roles    []UserRole   `gorm:"foreignKey:UserID"`
 	Branches []UserBranch `gorm:"foreignKey:UserID"`
 }

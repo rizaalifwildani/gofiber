@@ -8,7 +8,7 @@ import (
 
 type RoleResponse struct {
 	ID          uuid.UUID            `json:"id"`
-	Name        string               `json:"name"`
+	Name        string               `json:"name,omitempty"`
 	DisplayName string               `json:"displayName"`
 	Permissions []PermissionResponse `json:"permissions,omitempty"`
 }

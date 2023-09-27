@@ -8,8 +8,8 @@ import (
 
 type PermissionResponse struct {
 	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	DisplayName string    `json:"displayName"`
+	Name        string    `json:"name,omitempty"`
+	DisplayName string    `json:"displayName,omitempty"`
 	Actions     string    `json:"actions,omitempty"`
 }
 

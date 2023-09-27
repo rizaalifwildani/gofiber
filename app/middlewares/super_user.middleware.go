@@ -23,7 +23,7 @@ func SuperUser() func(*fiber.Ctx) error {
 				// Check the user's role from the claims
 				roles := claims.User.Roles
 				for _, role := range roles {
-					if strings.Contains(role.Name, "root") || strings.Contains(role.Name, "super") || strings.Contains(role.Name, "pusat") {
+					if strings.Contains(role.Role.Name, "root") || strings.Contains(role.Role.Name, "super") || strings.Contains(role.Role.Name, "pusat") {
 						return c.Next()
 					}
 				}

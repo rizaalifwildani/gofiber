@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/morkid/paginate"
 )
 
 type UserResponse struct {
@@ -22,7 +23,7 @@ func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 	roles := []RoleResponse{}
 	for _, role := range m.Roles {
 		permissions := []PermissionResponse{}
-		for _, permission := range role.Permissions {
+		for _, permission := range role.Role.Permissions {
 			permissions = append(permissions, PermissionResponse{
 				ID:          permission.PermissionID,
 				Name:        permission.Permission.Name,
@@ -32,8 +33,8 @@ func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 		}
 		roles = append(roles, RoleResponse{
 			ID:          role.ID,
-			Name:        role.Name,
-			DisplayName: role.DisplayName,
+			Name:        role.Role.Name,
+			DisplayName: role.Role.DisplayName,
 			Permissions: permissions,
 		})
 	}
@@ -62,11 +63,28 @@ func NewUserResponse(ctx *fiber.Ctx, m models.User) error {
 	return SuccessResponse(ctx, data)
 }
 
-func NewUserCollections(ctx *fiber.Ctx, m []models.User) error {
-	data := []UserResponse{}
+func NewUserCollections(ctx *fiber.Ctx, data paginate.Page) error {
+	users := data.Items.(*[]models.User)
+	userResponses := []UserResponse{}
 
-	for _, v := range m {
-		data = append(data, UserResponse{
+	for _, v := range *users {
+		roles := []RoleResponse{}
+		for _, role := range v.Roles {
+			roles = append(roles, RoleResponse{
+				ID:          role.ID,
+				DisplayName: role.Role.DisplayName,
+			})
+		}
+		branches := []BranchResponse{}
+		for _, branch := range v.Branches {
+			branches = append(branches, BranchResponse{
+				ID:     branch.BranchID,
+				Name:   branch.Branch.Name,
+				Code:   branch.Branch.Code,
+				Status: branch.Status,
+			})
+		}
+		userResponses = append(userResponses, UserResponse{
 			ID:        v.ID,
 			Username:  v.Username,
 			Phone:     v.Phone,
@@ -74,8 +92,11 @@ func NewUserCollections(ctx *fiber.Ctx, m []models.User) error {
 			FirstName: v.FirstName,
 			LastName:  v.LastName,
 			RegNumber: v.RegNumber,
+			Roles:     roles,
+			Branches:  branches,
 		})
 	}
+	data.Items = userResponses
 
-	return SuccessResponse(ctx, data)
+	return PaginationResponse(ctx, data)
 }

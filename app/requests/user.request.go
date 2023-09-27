@@ -11,7 +11,7 @@ type CreateUserRequest struct {
 	RegNumber string `json:"regNumber" validate:"max=50"`
 	Password  string `json:"password" validate:"required"`
 
-	Roles    []models.Role       `json:"roles" validate:"required"`
+	Roles    []models.UserRole   `json:"roles" validate:"required"`
 	Branches []models.UserBranch `json:"branches,omitempty"`
 }
 
@@ -24,7 +24,7 @@ type UpdateUserRequest struct {
 	RegNumber string `json:"regNumber" validate:"max=50"`
 	Password  string `json:"password" validate:"required"`
 
-	Roles    []models.Role       `json:"roles" validate:"required"`
+	Roles    []models.UserRole   `json:"roles" validate:"required"`
 	Branches []models.UserBranch `json:"branches,omitempty"`
 }
 

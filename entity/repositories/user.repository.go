@@ -6,6 +6,8 @@ import (
 
 	"bitbucket.org/rizaalifofficial/gofiber/entity/models"
 	"bitbucket.org/rizaalifofficial/gofiber/utils"
+	"github.com/gofiber/fiber/v2"
+	"github.com/morkid/paginate"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +19,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{
 		BaseRepository{
 			db:      db,
-			Preload: []string{"Roles.Permissions.Permission", "Branches.Branch"},
+			Preload: []string{"Roles.Role.Permissions.Permission", "Branches.Branch"},
 		},
 	}
 }
@@ -48,21 +50,35 @@ func (r *UserRepository) CreateUser(model *models.User, authModel *models.UserAu
 	})
 }
 
-func (r *UserRepository) FindAllUser(filters []FilterType) ([]models.User, error) {
+func (r *UserRepository) FindAllUser(c *fiber.Ctx, filters []FilterType) (paginate.Page, error) {
 	model := []models.User{}
 	query := r.db.Model(&model)
 	query.
-		Joins("JOIN user_roles ON users.id = user_roles.user_id").
-		Joins("JOIN roles ON user_roles.role_id = roles.id").
-		Where("roles.name != ?", "root")
+		Preload("Roles.Role").
+		Preload("Branches.Branch").
+		Joins("JOIN user_roles ON user_roles.user_id = users.id").
+		Joins("JOIN roles ON roles.id = user_roles.role_id").
+		Joins("JOIN user_branches ON user_branches.user_id = users.id").
+		Joins("JOIN branches ON branches.id = user_branches.branch_id")
+
 	for _, v := range filters {
 		if v.Value != "" {
-			query.Where("LOWER("+v.Key+")"+" ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			if v.Key == "branch" {
+				query.Where("LOWER(branches.name) ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			} else if v.Key == "role" {
+				query.Where("LOWER(roles.display_name) ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			} else {
+				query.Where("LOWER("+v.Key+")"+" ILIKE ?", fmt.Sprintf("%%%s%%", v.Value))
+			}
 		}
 	}
+
+	query.Where("roles.name != ?", "root")
 	query.Order(fmt.Sprintf("%v DESC", "first_name"))
 	err := query.Find(&model)
-	return model, err.Error
+	pg := paginate.New()
+	result := pg.With(query).Request(c.Request()).Response(&model)
+	return result, err.Error
 }
 
 func (r *UserRepository) FindUser(id string) (models.User, error) {
@@ -76,7 +92,7 @@ func (r *UserRepository) UpdateUser(model *models.User, authModel *models.UserAu
 	for _, role := range model.Roles {
 		roles = append(roles, &models.UserRole{
 			UserID: model.ID,
-			RoleID: role.ID,
+			RoleID: role.RoleID,
 		})
 	}
 

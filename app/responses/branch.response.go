@@ -10,8 +10,8 @@ type BranchResponse struct {
 	ID          uuid.UUID           `json:"id"`
 	Name        string              `json:"name"`
 	Code        string              `json:"code"`
-	Address     string              `json:"address"`
-	Description string              `json:"description"`
+	Address     string              `json:"address,omitempty"`
+	Description string              `json:"description,omitempty"`
 	Status      models.BranchStatus `json:"status,omitempty"`
 }
 
